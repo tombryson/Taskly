@@ -1,9 +1,11 @@
-// src/components/Sidebar.js
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
-function Sidebar({ onSectionChange }) {
+function Sidebar({ onSectionChange, theme, onToggleTheme }) {
   return (
-    <div className="sidebar bg-gray-100 w-64 h-screen p-4 z-10">
+    <div className={`sidebar w-64 h-screen p-4 z-10 ${
+      theme === 'light' ? 'bg-gray-200' : 'bg-gray-800'
+    }`}
+  >
       <h1 className="text-2xl font-semibold mb-4">Pomodoro App</h1>
       <ul className="space-y-2">
         <li>
@@ -36,6 +38,14 @@ function Sidebar({ onSectionChange }) {
             onClick={() => onSectionChange('about')}
           >
             About
+          </button>
+        </li>
+        <li>
+          <button
+            className="w-full text-left"
+            onClick={onToggleTheme}
+          >
+            Toggle Theme
           </button>
         </li>
       </ul>

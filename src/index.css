@@ -18,21 +18,19 @@
   -webkit-text-size-adjust: 100%;
 }
 
+body {
+  min-height: 100vh;
+  text-rendering: optimizeSpeed;
+  line-height: 1.5;
+}
+
 a {
   font-weight: 500;
   color: #646cff;
   text-decoration: inherit;
 }
-
 a:hover {
   color: #535bf2;
-}
-
-body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
-  display: flex;
 }
 
 h1 {
@@ -50,6 +48,8 @@ button {
   background-color: #1a1a1a;
   cursor: pointer;
   transition: border-color 0.25s;
+  margin: 4px;
+  transition: all 0.1s ease;
 }
 button:hover {
   border-color: #646cff;
@@ -59,15 +59,42 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
+.pomodoro-timer {
+    display: flex;
+    width: 400px;
+    margin-inline: auto;
+    flex-direction: column;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+    padding: 1rem;
+    border-radius: 1rem;
+    transition: all 0.5s ease-in-out;
+    border: solid 2px black;
   }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+  
+.timer-text {
+    font-family: 'Arial', sans-serif;
+    font-weight: 600;
+    font-size: 4rem;
+    color: #333;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 1;
+}
+
+.bg-gray-200 {
+  background-color: #f0f0f0ee;
+}
+
+.bg-gray-800 {
+  background-color: #242424;
+}
+
+.timer-text {
+  color: #333;
+}
+
+.dark .timer-text {
+  color: #fff;
 }
