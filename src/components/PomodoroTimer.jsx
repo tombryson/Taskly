@@ -18,7 +18,7 @@ function PomodoroTimer({theme}) {
 
   const saveTaskToDatabase = async (task, time) => {
     try {
-      const response = await fetch('http://your-backend-url/api/task', {
+      const response = await fetch('http://localhost:5187/api/task', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

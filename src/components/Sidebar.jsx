@@ -35,9 +35,9 @@ function Sidebar({ onSectionChange, theme, onToggleTheme }) {
         <li>
           <button
             className="w-full text-left"
-            onClick={() => onSectionChange('about')}
+            onClick={() => onSectionChange('calendar')}
           >
-            About
+            Calendar
           </button>
         </li>
         <li>
