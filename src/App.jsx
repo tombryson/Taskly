@@ -20,7 +20,7 @@ function App() {
     <div className={`App`}>
       <div className="flex min-h-screen">
         {<Sidebar onSectionChange={handleSectionChange} theme={theme} onToggleTheme={toggleTheme} />}
-        <main className="flex-1">
+        <main className="flex-1 bg-white">
           {selectedSection === 'timer' && <PomodoroTimer theme={theme} />}
           {selectedSection === 'calendar' && <Calendar theme={theme} />}
         </main>
