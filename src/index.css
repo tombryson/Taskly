@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Caprasimo&display=swap');
 
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -101,4 +102,71 @@ button:focus-visible {
 
 .sidebar {
   color: white;
+}
+
+.graph-container {
+  width: 600px;
+  margin: 20px auto;
+  border: 1px solid #ccc;
+  padding: 10px;
+}
+
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 2px;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: grey;
+  stroke-width: 1px;
+  shape-rendering: crispEdges;
+}
+
+.axis text {
+  font-family: sans-serif;
+  font-size: 11px;
+}
+
+.title {
+  font-family: 'Caprasimo', cursive;
+  font-size: 32px;
+  padding: 0.8rem 0px 0.8rem 2.8rem;
+  font-style: oblique;
+  font-variant: petite-caps;
+  text-decoration: underline;
+  text-underline-position: under;
+  text-decoration-thickness: from-font;
+  text-shadow: 4px 0px 7px #faebd7
+}
+
+.pen-icon {
+  transform: rotate3d(0, 0, 6, -20deg);
+  margin-right: 26px;
+  padding: 8px 2px 20px 2px;
+}
+
+.title-div {
+  display: flex;
+}
+
+.main {
+  filter: invert(1);
+  background-color: lightgrey;
+}
+
+label {
+  cursor: pointer;
+}
+
+.graph-div {
+  display: grid;
+  grid-gap: 5px;
+  text-align: left;
+  padding: 50px;
+  border: 3px solid ghostwhite;
+  border-radius: 16px;
+  margin: 10px;
 }
