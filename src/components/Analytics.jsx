@@ -1,91 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { VictoryBar, VictoryLine, VictoryChart, VictoryAxis, VictoryTheme, VictoryLabel, TextSize } from 'victory';
 import axios from 'axios';
-import { filter } from 'd3';
+import { LineGraph, ColumnGraph } from './graphics';
 
 const RenderGraph = ({ graphType, project, summaryArray }) => (
     graphType === 'line'
         ? <LineGraph project={project} summaryArray={summaryArray} />
         : <ColumnGraph project={project} summaryArray={summaryArray} />
 )
-
-const LineGraph = ({ project, summaryArray }) => (
-    <VictoryChart theme={VictoryTheme.material} domainPadding={80} width={900} style={{ parent: { maxWidth: '100%', margin: 'auto' } }}>
-        <VictoryLabel x={200} y={30} text={`${project} Line Graph`} />
-        <VictoryAxis
-            label="Date"
-            tickFormat={(t) => new Date(t).toLocaleDateString()}
-            style={{
-                axisLabel: { padding: 40 },
-                ticks: { fontSize: 10 },
-                tickLabels: { fontSize: 10 }
-            }}
-        />
-        <VictoryAxis
-            dependentAxis
-            label="Seconds"
-            style={{
-                axisLabel: { padding: 40 },
-                ticks: { fontSize: 10 },
-                tickLabels: { fontSize: 10 }
-            }}
-        />
-        <VictoryLine
-            data={summaryArray.map(item => ({ x: new Date(item.date).getTime(), y: item.seconds }))}
-            style={{
-                data: { stroke: "#c43a31" },
-                parent: { border: "1px solid #ccc" }
-            }}
-            interpolation="monotoneX"
-        />
-    </VictoryChart>
-);
-
-const ColumnGraph = ({ project, summaryArray }) => {
-    const minDate = new Date(Math.min(...summaryArray.map(item => new Date(item.date).getTime())));
-    const maxDate = new Date(Math.max(...summaryArray.map(item => new Date(item.date).getTime())));
-    const tickValues = [];
-    for (let date = new Date(minDate); date <= maxDate; date.setDate(date.getDate() + 1)) {
-        tickValues.push(new Date(date).getTime());
-    }
-
-    return (
-        <VictoryChart
-            theme={VictoryTheme.material}
-            domainPadding={80}
-            width={800}
-            style={{ parent: { maxWidth: '80%', margin: 'auto' }}}
-        >
-            <VictoryLabel x={50} y={30} text={`Project: ${project}`} />
-            <VictoryAxis
-                label="Date"
-                tickValues={tickValues}
-                tickFormat={(t) => new Date(t).toLocaleDateString("en-UK", { month: '2-digit', day: '2-digit' })}
-                style={{
-                    axisLabel: { padding: 30 },
-                    ticks: { fontSize: 11 },
-                    tickLabels: { fontSize: 11 }
-                }}
-
-            />
-            <VictoryAxis
-                dependentAxis
-                label="Seconds"
-                style={{
-                    axisLabel: { padding: 40 },
-                    tickLabels: { fontSize: 8 }
-                }}
-            />
-            <VictoryBar
-                data={summaryArray.map(item => ({ x: new Date(item.date).getTime(), y: item.seconds }))}
-                style={{
-                    data: { fill: "#c43a31" }
-                }}
-            />
-        </VictoryChart>
-    )
-};
-
 
 export default function Analytics() {
 
@@ -105,7 +26,6 @@ export default function Analytics() {
 
 
     const handleStartDateChange = (e) => {
-        console.log(e);
         setStartDate(e.target.value);
     };
 
@@ -113,17 +33,13 @@ export default function Analytics() {
         setEndDate(e.target.value);
     };
 
-    const handleFilterClick = (project, summaryArray) => {
-        console.log(`startDate: ${startDate}, endDate: ${endDate}`);
-        console.log(project, summaryArray);
-        console.log(filteredData);
+    const handleFilterClick = (project) => {
 
-        const newData = summaryArray.filter(item => (
+        const newData = processedData.result[project].filter(item => (
             item.date >= startDate &&
             item.date <= endDate
         ));
     
-        console.log(newData);
         setFilteredData(prevData => ({
             ...prevData,
             [project]: newData
@@ -157,7 +73,7 @@ export default function Analytics() {
             const summary = summarizeByDay(items);
             result[project] = Object.keys(summary).map(date => ({ date, seconds: summary[date] }));
         });
-        console.log(totalTimes);
+
         setTotalTimes(totalTimes)
         return { result };
     }
@@ -167,7 +83,6 @@ export default function Analytics() {
             try {
                 const response = await axios.get('https://pomodoro-analytics.fly.dev/viewData');
                 setProcessedData(processData(response.data));
-                console.log(processedData);
                 setLoading(false);
             } catch (err) {
                 setError(err);
@@ -215,6 +130,7 @@ export default function Analytics() {
                     {project}
                 </label>
                 </li>
+                
             ))}
     
         <label className='italic'>
@@ -230,14 +146,14 @@ export default function Analytics() {
         {Object.keys(selectedProjects).map(project => {
             if (!selectedProjects[project]) return null
 
-            const summaryArray = processedData.result[project];
+            const summaryArray = selectedProjects[project] ? filteredData[project] || processedData.result[project]: []
             
             return (
                 <>
-                    <div className="date-range-picker">
-                        <input type="date" value={startDate} onChange={handleStartDateChange} />
-                        <input type="date" value={endDate} onChange={handleEndDateChange} />
-                        <button onClick={() => handleFilterClick(project, summaryArray)}>Filter</button>
+                    <div className="date-range-picker p-2 m-2">
+                        <input className='p-0.5 m-0.5 border rounded-sm' type="date" value={startDate} onChange={handleStartDateChange} />
+                        <input className='p-0.5 m-0.5 border rounded-sm' type="date" value={endDate} onChange={handleEndDateChange} />
+                        <button className='border-gray-50' onClick={() => handleFilterClick(project, summaryArray)}>Filter</button>
                     </div>
                     <div className='graph-div' key={project}>
                         <h2>{project}</h2>

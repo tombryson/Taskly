@@ -170,10 +170,12 @@ label {
   border: 3px solid ghostwhite;
   border-radius: 16px;
   margin: 10px;
+  font-size: clamp(8px, 0.5rem + 0.6vw, 24px);
 }
 
 .VictoryContainer {
   height: auto!important;
   width: auto!important;
   min-width: fit-content;
+  min-width: 200px;
 }
