@@ -3,12 +3,43 @@ import { VictoryBar, VictoryLine, VictoryChart, VictoryAxis, VictoryTheme, Victo
 import axios from 'axios';
 
 export default function Analytics() {
+
+    const formatDate = (date) => {
+        return date.toISOString().substring(0, 10);
+    };
+
     const [data, setData] = useState({});
     const [filteredData, setFilteredData] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [selectedProjects, setSelectedProjects] = useState({});
     const [graphType, setGraphType] = useState('line');
+    const [startDate, setStartDate] = useState(formatDate(new Date()));
+    const [endDate, setEndDate] = useState(formatDate(new Date()));
+
+    const handleStartDateChange = (e) => {
+        console.log(e);
+        setStartDate(e.target.value);
+    };
+
+    const handleEndDateChange = (e) => {
+        setEndDate(e.target.value);
+    };
+
+    const handleFilterClick = (summaryArray) => {
+        console.log(`startDate: ${startDate}, endDate: ${endDate}`)
+        console.log(summaryArray);
+        const newData = {};
+        console.log(`filteredData: ${JSON.stringify(filteredData, null, 2)}`);
+        for (const project in filteredData) {
+            newData[project] = data[project].filter(item =>
+                new Date(item.session_start) >= startDate &&
+                new Date(item.session_start) <= endDate
+            );
+        }
+        console.log(newData);
+        setFilteredData(newData);
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -60,37 +91,39 @@ export default function Analytics() {
         }, {});
     }
 
-    const renderLineGraph = (project, summaryArray) => (
-        <VictoryChart theme={VictoryTheme.material} domainPadding={20} style={{ parent: { maxWidth: '60%', margin: 'auto' } }}>
-        <VictoryLabel x={225} y={30} text={`${project} Line Graph`} />
+    const renderLineGraph = (project, summaryArray) => {
+        return (
+            <VictoryChart theme={VictoryTheme.material} domainPadding={80} width={900} style={{ parent: { maxWidth: '100%', margin: 'auto' } }}>
+            <VictoryLabel x={200} y={30} text={`${project} Line Graph`} />
+                <VictoryAxis
+                    label="Date"
+                    tickFormat={(t) => new Date(t).toLocaleDateString()}
+                    style={{
+                        axisLabel: { padding: 40 },
+                        ticks: { fontSize: 10 },
+                        tickLabels: { fontSize: 10 }
+                    }}
+                />
             <VictoryAxis
-                label="Date"
-                tickFormat={(t) => new Date(t).toLocaleDateString()}
+                dependentAxis
+                label="Seconds"
                 style={{
-                    axisLabel: { padding: 30 },
-                    ticks: { fontSize: 6 },
-                    tickLabels: { fontSize: 6 }
+                axisLabel: { padding: 40 },
+                ticks: { fontSize: 10 },
+                tickLabels: { fontSize: 10 }
                 }}
             />
-          <VictoryAxis
-            dependentAxis
-            label="Seconds"
-            style={{
-              axisLabel: { padding: 40 },
-              ticks: { fontSize: 6 },
-              tickLabels: { fontSize: 6 }
-            }}
-          />
-          <VictoryLine
-            data={summaryArray.map(item => ({ x: new Date(item.date).getTime(), y: item.seconds }))}
-            style={{
-              data: { stroke: "#c43a31" },
-              parent: { border: "1px solid #ccc" }
-            }}
-            interpolation="monotoneX"
-          />
-        </VictoryChart>
-    );
+            <VictoryLine
+                data={summaryArray.map(item => ({ x: new Date(item.date).getTime(), y: item.seconds }))}
+                style={{
+                data: { stroke: "#c43a31" },
+                parent: { border: "1px solid #ccc" }
+                }}
+                interpolation="monotoneX"
+            />
+            </VictoryChart>
+        )
+    };
 
     const renderColumnGraph = (project, summaryArray) => {
         const minDate = new Date(Math.min(...summaryArray.map(item => new Date(item.date).getTime())));
@@ -102,8 +135,9 @@ export default function Analytics() {
         return (
         <VictoryChart
           theme={VictoryTheme.material}
-          domainPadding={30}
-          style={{ parent: { maxWidth: '60%', margin: 'auto' }}}
+          domainPadding={80}
+          width={800}
+          style={{ parent: { maxWidth: '80%', margin: 'auto' }}}
         >
         <VictoryLabel x={50} y={30} text={`Project: ${project}`} />
         <VictoryAxis
@@ -112,17 +146,17 @@ export default function Analytics() {
             tickFormat={(t) => new Date(t).toLocaleDateString("en-UK", { month: '2-digit', day: '2-digit' })}
             style={{
                 axisLabel: { padding: 30 },
-                ticks: { fontSize: 4 }, // Reduce font size
-                tickLabels: { fontSize: 4 } // Reduce font size
+                ticks: { fontSize: 11 },
+                tickLabels: { fontSize: 11 }
             }}
-            // Add this to offset the tick labels
+            
         />
         <VictoryAxis
             dependentAxis
             label="Seconds"
             style={{
               axisLabel: { padding: 40 },
-              tickLabels: { fontSize: 6 } // Reduce font size
+              tickLabels: { fontSize: 8 }
             }}
         />
         <VictoryBar
@@ -146,6 +180,7 @@ export default function Analytics() {
                 <label>
                     <input
                     type="checkbox"
+                    className="mr-2"
                     checked={selectedProjects[project] || false}
                     onChange={event => handleCheckboxChange(event, project)}
                     />
@@ -154,9 +189,10 @@ export default function Analytics() {
                 </li>
             ))}
     
-        <label>
+        <label className='italic'>
             <input
                 type="checkbox"
+                className='mr-2'
                 checked={graphType === 'column'}
                 onChange={handleGraphTypeChange}
             />
@@ -171,32 +207,37 @@ export default function Analytics() {
 
             const summary = summarizeByDay(items);
             const summaryArray = Object.keys(summary).map(date => ({ date, seconds: summary[date] }));
+            console.log(`summaryArray: ${JSON.stringify(summaryArray, null, 2)}`);
             const graph = graphType === 'line'
                 ? renderLineGraph(project, summaryArray)
                 : renderColumnGraph(project, summaryArray);
 
             return (
-                <div className='graph-div' key={project}>
-                    <h2>{project}</h2>
-                    <p>Total time spent: {timeDisplay}</p>
-                    <table>
-                        <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Seconds</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {summaryArray.map((item, index) => (
-                            <tr key={index}>
-                            <td>{item.date}</td>
-                            <td>{item.seconds}</td>
-                            </tr>
-                        ))}
-                        </tbody>
-                    </table>
+                <><div className="date-range-picker">
+                    <input type="date" value={startDate} onChange={handleStartDateChange} />
+                    <input type="date" value={endDate} onChange={handleEndDateChange} />
+                    <button onClick={handleFilterClick}>Filter</button>
+                </div><div className='graph-div' key={project}>
+                        <h2>{project}</h2>
+                        <p>Total time spent: {timeDisplay}</p>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Seconds</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {summaryArray.map((item, index) => (
+                                    <tr key={index}>
+                                        <td>{item.date}</td>
+                                        <td>{item.seconds}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                         {graph}
-                </div>
+                    </div></>
             );
         })}
     </div>

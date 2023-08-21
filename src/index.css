@@ -102,6 +102,7 @@ button:focus-visible {
 
 .sidebar {
   color: white;
+  height: auto;
 }
 
 .graph-container {
@@ -169,4 +170,10 @@ label {
   border: 3px solid ghostwhite;
   border-radius: 16px;
   margin: 10px;
+}
+
+.VictoryContainer {
+  height: auto!important;
+  width: auto!important;
+  min-width: fit-content;
 }
