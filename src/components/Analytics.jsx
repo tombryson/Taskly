@@ -24,41 +24,51 @@ export default function Analytics() {
     const [endDate, setEndDate] = useState(formatDate(new Date()));
     const [totalTimes, setTotalTimes] = useState();
     const [isGoalDivVisible, setIsGoalDivVisible] = useState(false);
-    const [goalStartDate, setGoalStartDate] = useState('');
-    const [goalEndDate, setGoalEndDate] = useState('');
-    const [goalHours, setGoalHours] = useState('');
-
+    const [goalStartDate, setGoalStartDate] = useState(null);
+    const [goalEndDate, setGoalEndDate] = useState(null);
+    const [goalHours, setGoalHours] = useState(null);
 
     /// Goals
-
     const handleGoalStartDateChange = (e) => setGoalStartDate(e.target.value);
     const handleGoalEndDateChange = (e) => setGoalEndDate(e.target.value);
     const handleGoalHoursChange = (e) => setGoalHours(e.target.value);
 
     const toggleGoalDiv = () => {
         setIsGoalDivVisible(!isGoalDivVisible);
-      };
+    };
 
     const submitGoal = async () => {
+        if (!goalStartDate || !goalEndDate || !goalHours) {
+            console.error("All fields are required");
+            return;
+        }
+
+        const goalStart = new Date(goalStartDate);
+        const goalEnd = new Date(goalEndDate);
+        const goalStartString = goalStart.toISOString();
+        const goalEndString = goalEnd.toISOString();
+
         const goalData = {
-            startDate: goalStartDate,
-            end_date: goalEndDate,
+            startDate: new Date(goalStartDate).toISOString().split("T")[0],
+            end_date: new Date(goalEndDate).toISOString().split("T")[0],
             hours: goalHours,
         };
 
+        console.log(goalData);
+
         try {
-            const response = await axios.post('/updateGoal', goalData);
+            console.log(`Sending POST request to: ${"https://pomodoro-analytics.fly.dev/updateGoal"}`);
+            const response = await axios.post('https://pomodoro-analytics.fly.dev/updateGoal', goalData);
+    
             if (response.status === 200) {
                 console.log('Goal updated successfully:', response.data);
             }
         } catch (error) {
             console.error('There was an error updating the goal:', error);
         }
-    };
-    
+    }
 
     /// Dates
-
     const handleStartDateChange = (e) => {
         setStartDate(e.target.value);
     };
@@ -68,7 +78,6 @@ export default function Analytics() {
     };
 
     const handleFilterClick = (project) => {
-
         const newData = processedData.result[project].filter(item => (
             item.date >= startDate &&
             item.date <= endDate
