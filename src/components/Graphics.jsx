@@ -1,37 +1,42 @@
-import { VictoryBar, VictoryLine, VictoryChart, VictoryAxis, VictoryTheme, VictoryLabel, TextSize } from 'victory';
+import { VictoryBar, VictoryLine, VictoryScatter, VictoryChart, VictoryAxis, VictoryTheme, VictoryLabel, TextSize } from 'victory';
 import { filter } from 'd3';
 
 export const LineGraph = ({ project, summaryArray }) => (
     <VictoryChart theme={VictoryTheme.material} domainPadding={80} width={900} style={{ parent: { maxWidth: '100%', margin: 'auto' } }}>
-        <VictoryLabel x={200} y={30} text={`${project} Line Graph`} />
-        <VictoryAxis
-            label="Date"
-            tickFormat={(t) => new Date(t).toLocaleDateString()}
-            style={{
-                axisLabel: { padding: 40 },
-                ticks: { fontSize: 10 },
-                tickLabels: { fontSize: 10 }
-            }}
-        />
-        <VictoryAxis
-            dependentAxis
-            label="Seconds"
-            style={{
-                axisLabel: { padding: 40 },
-                ticks: { fontSize: 10 },
-                tickLabels: { fontSize: 10 }
-            }}
-        />
-        <VictoryLine
-            data={summaryArray.map(item => ({ x: new Date(item.date).getTime(), y: item.seconds }))}
-            style={{
-                data: { stroke: "#c43a31" },
-                parent: { border: "1px solid #ccc" }
-            }}
-            interpolation="monotoneX"
-        />
+      <VictoryLabel x={200} y={30} text={`${project} Line Graph`} />
+      <VictoryAxis
+        label="Date"
+        tickFormat={(t) => new Date(t).toLocaleDateString()}
+        style={{
+          axisLabel: { padding: 40 },
+          ticks: { fontSize: 10 },
+          tickLabels: { fontSize: 10 }
+        }}
+      />
+      <VictoryAxis
+        dependentAxis
+        label="Seconds"
+        style={{
+          axisLabel: { padding: 40 },
+          ticks: { fontSize: 10 },
+          tickLabels: { fontSize: 10 }
+        }}
+      />
+      <VictoryLine
+        data={summaryArray.map(item => ({ x: new Date(item.date).getTime(), y: item.seconds }))}
+        style={{
+          data: { stroke: "#b23b21" },
+          parent: { border: "1px solid #ccc" }
+        }}
+        interpolation="monotoneX"
+      />
+      <VictoryScatter
+        data={summaryArray.map(item => ({ x: new Date(item.date).getTime(), y: item.seconds }))}
+        size={5}
+        style={{ data: { fill: "4169e1" } }}
+      />
     </VictoryChart>
-);
+  );
 
 export const ColumnGraph = ({ project, summaryArray }) => {
     const minDate = new Date(Math.min(...summaryArray.map(item => new Date(item.date).getTime())));

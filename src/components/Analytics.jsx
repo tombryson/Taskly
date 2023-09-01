@@ -23,7 +23,41 @@ export default function Analytics() {
     const [startDate, setStartDate] = useState(formatDate(new Date()));
     const [endDate, setEndDate] = useState(formatDate(new Date()));
     const [totalTimes, setTotalTimes] = useState();
+    const [isGoalDivVisible, setIsGoalDivVisible] = useState(false);
+    const [goalStartDate, setGoalStartDate] = useState('');
+    const [goalEndDate, setGoalEndDate] = useState('');
+    const [goalHours, setGoalHours] = useState('');
 
+
+    /// Goals
+
+    const handleGoalStartDateChange = (e) => setGoalStartDate(e.target.value);
+    const handleGoalEndDateChange = (e) => setGoalEndDate(e.target.value);
+    const handleGoalHoursChange = (e) => setGoalHours(e.target.value);
+
+    const toggleGoalDiv = () => {
+        setIsGoalDivVisible(!isGoalDivVisible);
+      };
+
+    const submitGoal = async () => {
+        const goalData = {
+            startDate: goalStartDate,
+            end_date: goalEndDate,
+            hours: goalHours,
+        };
+
+        try {
+            const response = await axios.post('/updateGoal', goalData);
+            if (response.status === 200) {
+                console.log('Goal updated successfully:', response.data);
+            }
+        } catch (error) {
+            console.error('There was an error updating the goal:', error);
+        }
+    };
+    
+
+    /// Dates
 
     const handleStartDateChange = (e) => {
         setStartDate(e.target.value);
@@ -154,6 +188,19 @@ export default function Analytics() {
                         <input className='p-0.5 m-0.5 border rounded-sm' type="date" value={startDate} onChange={handleStartDateChange} />
                         <input className='p-0.5 m-0.5 border rounded-sm' type="date" value={endDate} onChange={handleEndDateChange} />
                         <button className='border-gray-50' onClick={() => handleFilterClick(project, summaryArray)}>Filter</button>
+                    </div>
+                    <button onClick={toggleGoalDiv}>Set Goal</button>
+                    <div id="goalDiv" className={isGoalDivVisible ? '' : 'hidden'}>
+                        <label htmlFor="goalStartDate">Start Date:</label>
+                        <input type="date" id="goalStartDate" onChange={handleGoalStartDateChange} /><br />
+
+                        <label htmlFor="goalEndDate">End Date:</label>
+                        <input type="date" id="goalEndDate" onChange={handleGoalEndDateChange} /><br />
+
+                        <label htmlFor="goalHours">Hours:</label>
+                        <input type="number" id="goalHours" onChange={handleGoalHoursChange} /><br />
+
+                        <button onClick={submitGoal}>Submit Goal</button>
                     </div>
                     <div className='graph-div' key={project}>
                         <h2>{project}</h2>
