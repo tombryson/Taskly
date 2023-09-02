@@ -49,7 +49,7 @@ export default function Analytics() {
         const goalEndString = goalEnd.toISOString();
 
         const goalData = {
-            startDate: new Date(goalStartDate).toISOString().split("T")[0],
+            start_date: new Date(goalStartDate).toISOString().split("T")[0],
             end_date: new Date(goalEndDate).toISOString().split("T")[0],
             hours: goalHours,
         };
