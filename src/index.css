@@ -179,3 +179,10 @@ label {
   min-width: fit-content;
   min-width: 200px;
 }
+
+.analytics-goal-div {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
