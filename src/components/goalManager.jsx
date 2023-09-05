@@ -58,9 +58,10 @@ const viewGoals = async () => {
 async function getProjectArray() {
     let projectNames = [];
     try {
-      const response = await axios.get('https://pomodoro-analytics.fly.dev/getGoals');
+      const response = await axios.get('https://pomodoro-analytics.fly.dev/viewData');
+      console.log(JSON.stringify(response.data))
       if (response.status === 200) {
-        projectNames = response.data.map(x => x.project);
+        projectNames = Object.keys(response.data);
       }
     } catch (error) {
       console.error("Couldn't find goal data");
